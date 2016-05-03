@@ -1,0 +1,273 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Energy Forecast Demo</title><meta name="generator" content="MATLAB 8.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2012-10-10"><meta name="DC.source" content="MainAnalysis.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Energy Forecast Demo</h1><!--introduction--><p>This demo showcases visualization and analysis for forecasting energy demand based on historical data. We have access to hour-by-hour utility usage for the year 2006, including information on the day of the week and the ambient temperature. Using this information, we will come up with a model for forecasting future energy demands based on parameters such as temperature and time of day.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Import</a></li><li><a href="#2">Initial Exploration of Data</a></li><li><a href="#5">Custom Visualization</a></li><li><a href="#8">Surface Fitting</a></li><li><a href="#13">Conclusion</a></li></ul></div><h2>Import<a name="1"></a></h2><p>The first step in our process is to import the data from the Excel file.</p><pre class="codeinput">clear;
+importExcelData(<span class="string">'2006Data.xls'</span>);
+</pre><h2>Initial Exploration of Data<a name="2"></a></h2><p>We can get great insights just by doing quick visualization of the data that we brought in. For example, we can look at the power as a function of the time of day. Let's use a boxplot to look at it.</p><p><b>Power vs. Hour</b></p><pre class="codeinput">boxplot(Power, Hour);
+xlabel(<span class="string">'Hour'</span>); ylabel(<span class="string">'Power (MW)'</span>);
+</pre><img vspace="5" hspace="5" src="MainAnalysis_01.png" alt=""> <p>We can do the same for the other time scales.</p><p><b>Power vs. Day of Week</b></p><p>We can see that Saturday and Sunday have visibly lower power usage compared to weekdays.</p><pre class="codeinput">dayText =  {<span class="string">'Mon'</span>, <span class="string">'Tue'</span>, <span class="string">'Wed'</span>, <span class="string">'Thu'</span>, <span class="string">'Fri'</span>, <span class="string">'Sat'</span>, <span class="string">'Sun'</span>};
+
+boxplot(Power, DayOfWeek, <span class="keyword">...</span>
+  <span class="string">'notch'</span>, <span class="string">'on'</span>, <span class="string">'labels'</span>, dayText(unique(DayOfWeek)));
+xlabel(<span class="string">'Day of Week'</span>); ylabel(<span class="string">'Power (MW)'</span>);
+</pre><img vspace="5" hspace="5" src="MainAnalysis_02.png" alt=""> <p><b>Power vs. Month</b></p><p>We see some seasonal effects by looking month by month. In general colder months use more power to heat the homes, but we also see some increase during hotter months, suggesting the use of electricity for air conditioning.</p><pre class="codeinput">monthText =  {<span class="string">'Jan'</span>, <span class="string">'Feb'</span>, <span class="string">'Mar'</span>, <span class="string">'Apr'</span>, <span class="string">'May'</span>, <span class="string">'Jun'</span>, <span class="string">'Jul'</span>, <span class="keyword">...</span>
+  <span class="string">'Aug'</span>, <span class="string">'Sep'</span>, <span class="string">'Oct'</span>, <span class="string">'Nov'</span>, <span class="string">'Dec'</span>};
+
+boxplot(Power, Month, <span class="keyword">...</span>
+  <span class="string">'notch'</span>, <span class="string">'on'</span>, <span class="string">'labels'</span>, monthText(unique(Month)));
+xlabel(<span class="string">'Month'</span>); ylabel(<span class="string">'Power (MW)'</span>);
+</pre><img vspace="5" hspace="5" src="MainAnalysis_03.png" alt=""> <h2>Custom Visualization<a name="5"></a></h2><p>Another way to look at this is to plot the data as a single time series data. In order to do that, we will first construct a serial date for each of the data points.</p><pre class="codeinput">serialTime = datenum(2006, Month, Day, Hour, 0, 0);
+</pre><p>Now, we can visualize all of the data points versus time. We'll also plot Temperature versus time.</p><pre class="codeinput">createPowerTempPlot(serialTime, Power, Temp)
+</pre><img vspace="5" hspace="5" src="MainAnalysis_04.png" alt=""> <p>If we zoom in, we see the daily effect, as well as weekly, and monthly effects. We can see that weekends clearly behaves differently than weekdays, based on the cyclical behavior that seems to have a period of 7 days.</p><p>We also see that there is a large variation in temperature throughout the year. We suspect that temperature is responsible for the long-term effect, while the time of day is responsible for the short-term effect.</p><h2>Surface Fitting<a name="8"></a></h2><p>Based on this, we will express <tt>Power</tt> as a function of <tt>Temperature</tt> and <tt>Hour</tt>.</p><p>Rather than using all of the data sets, we will pick out a subset of the data for fitting. Since weekdays and weekends behave differently, we will look at them separately. Also, to get a wide range of temperatures, we will select one cold month (January) and one warm month (July)</p><p>First, let's extract out the weekdays for January and July. To remind ourselves, the day of the week is coded this way:</p><div><ul><li>Monday = 1</li><li>Tuesday = 2</li><li>Wednesday = 3</li><li>Thursday = 4</li><li>Friday = 5</li><li>Saturday = 6</li><li>Sunday = 7</li></ul></div><p>Based on this, we can get the indicies of all the weekdays AND all the January and July data.</p><pre class="codeinput">weekdays          = DayOfWeek &lt; 6;
+interestingMonths = ismember(Month, [1 7]);
+idx = weekdays &amp; interestingMonths;
+</pre><p>We can use this result to extract out the <tt>Hour</tt>, <tt>Temperature</tt>, and <tt>Power</tt> data for the desired points</p><pre class="codeinput">thisHour = Hour(idx);
+thisTemp = Temp(idx);
+thisPower = Power(idx);
+</pre><p>We will fit the data to this equation:</p><pre>   a0 + a1*cos(w*t) + b1*sin(w*t) + a2*cos(2*w*t) + b2*sin(2*w*t) +
+      c1*y^2 + c2*y</pre><p>where <tt>t</tt> is hours and <tt>y</tt> is temperature.</p><p>(The following function is an auto-generated MATLAB file)</p><pre class="codeinput">[model, goodness] = createHourTempPowerSurfaceFit(thisHour, thisTemp, thisPower)    <span class="comment">%#ok</span>
+</pre><pre class="codeoutput">
+     General model:
+     model(x,y) = a0 + a1*cos(w*x) + b1*sin(w*x) + a2*cos(2*w*x) + b2*sin(2*w*x)
+                     + c1*y^2 + c2*y
+     Coefficients (with 95% confidence bounds):
+       a0 =       74.25  (73.69, 74.8)
+       a1 =      -11.71  (-12.54, -10.89)
+       a2 =      0.4612  (-0.2847, 1.207)
+       b1 =      -8.937  (-9.69, -8.183)
+       b2 =      -5.566  (-6.094, -5.037)
+       c1 =     0.02015  (0.0165, 0.02381)
+       c2 =     -0.6394  (-0.719, -0.5598)
+       w =      0.2665  (0.262, 0.271)
+
+
+goodness = 
+
+           sse: 33362
+       rsquare: 0.80627
+           dfe: 1024
+    adjrsquare: 0.80494
+          rmse: 5.7079
+
+</pre><img vspace="5" hspace="5" src="MainAnalysis_05.png" alt=""> <p>The graph above shows the surface fit based on the data points. The function also returns an object which can be used to make predictions.</p><p>For instance, we can look at the demand at noon when the temperature outside is -5 deg C.</p><pre class="codeinput">model(12, -5)
+</pre><pre class="codeoutput">
+ans =
+
+        89.98
+
+</pre><p>The 95% confidence intervals of the predicted demand is</p><pre class="codeinput">predint(model, [12, -5])
+</pre><pre class="codeoutput">
+ans =
+
+       78.738       101.22
+
+</pre><h2>Conclusion<a name="13"></a></h2><p>We have modeled the power usage as a function of the time of day and the outside temperature. While this may not be the best fit for the data, we have developed a routine that could be used to create better fits or analyze different data sets.</p><p class="footer">Copyright 2010 The MathWorks, Inc.<br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2012b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Energy Forecast Demo
+% This demo showcases visualization and analysis for forecasting energy
+% demand based on historical data. We have access to hour-by-hour utility
+% usage for the year 2006, including information on the day of the week and
+% the ambient temperature. Using this information, we will come up with a
+% model for forecasting future energy demands based on parameters such as
+% temperature and time of day.
+
+% Copyright 2010 The MathWorks, Inc.
+
+%% Import
+% The first step in our process is to import the data from the Excel file.
+clear;
+importExcelData('2006Data.xls'); 
+
+%% Initial Exploration of Data
+% We can get great insights just by doing quick visualization of the data
+% that we brought in. For example, we can look at the power as a function
+% of the time of day. Let's use a boxplot to look at it.
+%
+% *Power vs. Hour*
+
+boxplot(Power, Hour);
+xlabel('Hour'); ylabel('Power (MW)');
+
+%%
+% We can do the same for the other time scales.
+%
+% *Power vs. Day of Week*
+%
+% We can see that Saturday and Sunday have visibly lower power usage
+% compared to weekdays.
+
+dayText =  {'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'};
+
+boxplot(Power, DayOfWeek, ...
+  'notch', 'on', 'labels', dayText(unique(DayOfWeek)));
+xlabel('Day of Week'); ylabel('Power (MW)');
+
+%%
+% *Power vs. Month*
+%
+% We see some seasonal effects by looking month by month. In general colder
+% months use more power to heat the homes, but we also see some increase
+% during hotter months, suggesting the use of electricity for air
+% conditioning.
+
+monthText =  {'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', ...
+  'Aug', 'Sep', 'Oct', 'Nov', 'Dec'};
+
+boxplot(Power, Month, ...
+  'notch', 'on', 'labels', monthText(unique(Month)));
+xlabel('Month'); ylabel('Power (MW)');
+
+%% Custom Visualization
+% Another way to look at this is to plot the data as a single time series
+% data. In order to do that, we will first construct a serial date for each
+% of the data points.
+
+serialTime = datenum(2006, Month, Day, Hour, 0, 0);
+
+%%
+% Now, we can visualize all of the data points versus time. We'll also plot
+% Temperature versus time.
+
+createPowerTempPlot(serialTime, Power, Temp)
+
+%%
+% If we zoom in, we see the daily effect, as well as weekly, and monthly
+% effects. We can see that weekends clearly behaves differently than
+% weekdays, based on the cyclical behavior that seems to have a period of 7
+% days.
+%
+% We also see that there is a large variation in temperature throughout the
+% year. We suspect that temperature is responsible for the long-term
+% effect, while the time of day is responsible for the short-term effect.
+
+%% Surface Fitting
+% Based on this, we will express |Power| as a function of |Temperature| and
+% |Hour|.
+%
+% Rather than using all of the data sets, we will pick out a subset of the
+% data for fitting. Since weekdays and weekends behave differently, we will
+% look at them separately. Also, to get a wide range of temperatures, we
+% will select one cold month (January) and one warm month (July)
+%
+% First, let's extract out the weekdays for January and July. To remind
+% ourselves, the day of the week is coded this way:
+%
+% * Monday = 1
+% * Tuesday = 2
+% * Wednesday = 3
+% * Thursday = 4
+% * Friday = 5
+% * Saturday = 6
+% * Sunday = 7
+%
+% Based on this, we can get the indicies of all the weekdays AND all the
+% January and July data.
+
+weekdays          = DayOfWeek < 6;
+interestingMonths = ismember(Month, [1 7]);
+idx = weekdays & interestingMonths;
+
+%%
+% We can use this result to extract out the |Hour|, |Temperature|, and
+% |Power| data for the desired points
+
+thisHour = Hour(idx);
+thisTemp = Temp(idx);
+thisPower = Power(idx);
+
+%%
+% We will fit the data to this equation:
+%
+%     a0 + a1*cos(w*t) + b1*sin(w*t) + a2*cos(2*w*t) + b2*sin(2*w*t) + 
+%        c1*y^2 + c2*y
+%
+% where |t| is hours and |y| is temperature.
+%
+% (The following function is an auto-generated MATLAB file)
+
+[model, goodness] = createHourTempPowerSurfaceFit(thisHour, thisTemp, thisPower)    %#ok
+
+%%
+% The graph above shows the surface fit based on the data points. The
+% function also returns an object which can be used to make predictions.
+%
+% For instance, we can look at the demand at noon when the temperature
+% outside is -5 deg C.
+
+model(12, -5)
+
+%%
+% The 95% confidence intervals of the predicted demand is
+
+predint(model, [12, -5])
+%% Conclusion
+% We have modeled the power usage as a function of the time of day and
+% the outside temperature. While this may not be the best fit for the data,
+% we have developed a routine that could be used to create better fits or
+% analyze different data sets.
+##### SOURCE END #####
+--></body></html>
